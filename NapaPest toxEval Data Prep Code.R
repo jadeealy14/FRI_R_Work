@@ -42,8 +42,10 @@ library(readxl)
 read_excel("NapaToxEvalData+Chemicals+Sites.xlsx")
 
 path_to_tox <- system.file("extdata", package="toxEval")
+
 tox_list <- create_toxEval("NapaToxEvalData+Chemicals+Sites.xlsx")
 
+getwd()
 
 ##---- next step after loading data -------
 ACC <- get_ACC(tox_list$chem_info$CAS)
@@ -60,5 +62,10 @@ plot_tox_stacks(chemical_summary,
                 chem_site = tox_list$chem_site, 
                 category =  "Biological")
 
-#I got some data, but the data looks really messed up. I don't think it ran correctly. The chemical summary looks weird. 
-#Need to look into this later. 
+str(data)
+#'data.frame':	80 obs. of  4 variables:
+#  $ SiteID     : chr  "T11456500" "T11456500" "T11456500" "T11456500" ...
+#$ Sample Date: chr  "4/18/2017 3:50:00 PM" "5/2/2017 4:10:00 PM" "4/11/2017 5:20:00 PM" "4/25/2017 8:30:00 PM" ...
+#$ CAS        : chr  "138261-41-3" "138261-41-3" "1071-83-6" "138261-41-3" ...
+#$ Value      : num  16 16 0.02 16 0.02 0.02 7 16 7 0.02 ...
+
