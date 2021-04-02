@@ -22,11 +22,20 @@ colnames(sites) <- c("SiteID", "Short Name", "site_grouping", "dec_lat", "dec_lo
 
 #sites$SITEID <- NULL / accidentally added a column to my dataframe, and this is the code to delete columns from dataframes
 
-#Need to figure out how to put "T" in front of the SITEID before I convert to excel 
+#Need to figure out how to put "T" in front of the SITEID and Short Name before I convert to excel 
 sites$SiteID <- as.character(sites$SiteID) #first have to convert from numeric --> character
 str(sites$SiteID) #double check that it converted to character correctly
-sites$SiteID <- paste0('T', sites$SiteID) #code to add T into "SiteID"
+
+#sites$SiteID <- paste0('T', sites$SiteID) #code to add T into "SiteID"
+##this step is actually unnecessary, but it's fine to add if desired 
+##however, "as.character()" alone was sufficient for changing siteID from being rude as numeric --> charaacter 
+
 View(sites) #reload sites to view "T" 
+#always reload to see new, recent changes made 
+
+sites$`Short Name` <- as.character(sites$`Short Name`)
+str(sites$`Short Name`)
+#it seemed to work, so now I just need to redownload this file and change my mastersheet 
 
 ##----- convering above files into excel sheet -----
 write.csv(data, "NapaToxEval_data.csv")
@@ -52,7 +61,15 @@ ACC <- get_ACC(tox_list$chem_info$CAS)
 ACC <- remove_flags(ACC)
 
 cleaned_ep <- clean_endPoint_info(end_point_info)
-filtered_ep <- filter_groups(cleaned_ep)
+
+filtered_ep <- filter_groups(cleaned_ep,
+                             groupCol = "intended_target_family",
+                             assays = c("ATG","BSK", "NVS", "OT", "TOX21", 
+                                        "CEETOX", "APR", "CLD", "TANGUAY",
+                                        "NHEERL_PADILLA","NCCT_SIMMONS", "ACEA"),
+                             remove_groups = c("Background Measurement",
+                                               "Undefined"))
+
 
 chemical_summary <- get_chemical_summary(tox_list, ACC, filtered_ep)
 
@@ -61,6 +78,18 @@ plot_tox_boxplots(chemical_summary, "Biological")
 plot_tox_stacks(chemical_summary, 
                 chem_site = tox_list$chem_site, 
                 category =  "Biological")
+
+plot_tox_endpoints(chemical_summary, top_num = 10,
+                   category = "Biological", 
+                   filterBy = "Cell Cycle")
+
+make_tox_map(chemical_summary, 
+             chem_site = tox_list$chem_site, 
+             category = "Biological")
+
+plot_tox_heatmap(chemical_summary, 
+                 chem_site = tox_list$chem_site, 
+                 category = "Biological")
 
 str(data)
 #'data.frame':	80 obs. of  4 variables:
